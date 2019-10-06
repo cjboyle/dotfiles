@@ -4,8 +4,8 @@ Import-Module posh-git
 Import-Module PSColor
 
 
-. "$env:USERPROFILE/.pwsh/prompt.ps1"
-. "$env:USERPROFILE/.pwsh/profile.ps1"
+#Set-Theme to something in ./PoshThemes/
+. "$env:USERPROFILE/Documents/PowerShell/profile.ps1"
 
 
 # PSColor overrides
