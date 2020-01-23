@@ -1,0 +1,39 @@
+[user]
+    name = Connor Boyle
+    email = connorboyle@sasktel.net
+
+[github]
+    user = cjboyle
+    token = %TOKEN%
+
+[credential]
+    helper = cache --timeout=18000
+
+[log]
+    date = local
+
+[push]
+    default = simple
+
+[color]
+    ui = auto
+
+[alias]
+    aa = add -A
+    cm = commit -m
+    co = checkout
+    st = status -sb
+    ls = ls-tree --abbrev HEAD
+    
+    top = rev-parse --show-toplevel
+    cd-top = !cd $(git-top)
+    
+    branches = branch -a
+    remotes = remote -v
+    stashes = stash list
+    tags = tag -n 1 --list
+    
+    first-push = push --all --tags --set-upstream origin
+    uncommit = reset --soft HEAD~1
+    unstage = reset HEAD --
+    discard = checkout --
