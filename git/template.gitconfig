@@ -31,9 +31,29 @@
     branches = branch -a
     remotes = remote -v
     stashes = stash list
-    tags = tag -n 1 --list
+    tags = tag -n1 --list
     
     first-push = push --all --tags --set-upstream origin
     uncommit = reset --soft HEAD~1
     unstage = reset HEAD --
     discard = checkout --
+
+    # Emergencies
+    fire !"git add -A; git commit --no-verify -m 'Emergency commit'; git push --force origin HEAD:refs/heads/fire-wip-cjboyle; git fetch --all"
+    
+    # Linear logging
+    log-recent = log --since='1 week ago'
+    log-my-recent - !git log-recent --author $(git config user.email)
+    log-csv = !"echo short_commit,author_name,author_date,subject; git log --dateiso --format='%h,%an,%ad,%s'"
+    
+    # Tree logging
+    tree = !git tree2
+    tree-recent = !git tree --since='1 week ago'
+    tree-branch = !git tree2-branch
+    tree-branch-recent = !git tree-branch --since='1 week ago'
+    tree1 = !git tree1-branch --all
+    tree2 = !git tree2-branch --all
+    tree3 = !git tree3-branch --all
+    tree1-branch = log --graph --abbrev-commit --decorate --format=format:'%C(bold yellow)%h%C(reset) - %C(bold blue)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'
+	tree2-branch = log --graph --abbrev-commit --decorate --format=format:'%C(bold yellow)%h%C(reset) - %C(dim bold cyan)%ad%C(reset) %C(bold blue)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)'
+	tree3-branch = log --graph --abbrev-commit --decorate --format=format:'%C(bold yellow)%h%C(reset) - %C(dim bold cyan)%ad%C(reset) %C(bold green)(%ar)%C(reset) %C(dim bold cyan)(committed: %cd)%C(reset) %C(auto)%d%C(reset)%n''          %C(white)%s%C(reset)%n''          %C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)'
