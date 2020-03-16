@@ -2,19 +2,22 @@
 # May override built-in definitions
 
 
+# execution timer alias
 Set-Alias time Measure-Command
 
 
-function which {
+# get the executable or alias definition for the given command
+function Which-Command {
     param([string]$Name)
     (Get-Command $Name -ErrorAction SilentlyContinue).Definition
 }
+Set-Alias which Which-Command
 
 
-### Override 'cd' to add dash as an argument to go to old working directory (similar to Pop-Location)
+# override 'cd' to add dash as a valid argument to go to old working directory (similar to Pop-Location)
 if (Test-Path Alias:\cd) { Remove-Item Alias:\cd -Force }
 if (! $Global:OLDPWD) { $Global:OLDPWD = $null }
-function cd {
+function Set-LocationReversible {
     if ($args[0] -eq '-') { $nwd = $Global:OLDPWD }
     elseif ($args[0] -eq '') { return # don't update old }
     else { $nwd = $args[0]; }
@@ -25,20 +28,27 @@ function cd {
         Set-Title "$(Get-ShorterPath)"
     }
 }
+Set-Alias cd Set-LocationReversible
 
-function mkcd {
+
+# helper to 'cd' to a location, creating it if it does not exist
+function Set-NewLocation {
     $path = $args[0]
     if (!(Test-Path $path)) {
         mkdir $path
     }
     cd $path
 }
+Set-Alias mkcd Set-NewLocation
 
 
-### Hashing functions
-function md5 { Get-FileHash -Algorithm MD5 $args }
-function sha1 { Get-FileHash -Algorithm SHA1 $args }
-function sha256 { Get-FileHash -Algorithm SHA256 $args }
+# hashing helpers
+function Get-MD5Hash { Get-FileHash -Algorithm MD5 $args }
+function Get-SHA1Hash { Get-FileHash -Algorithm SHA1 $args }
+function Get-SHA256Hash { Get-FileHash -Algorithm SHA256 $args }
+Set-Alias md5 Get-MD5Hash
+Set-Alias sha1 Get-SHA1Hash
+Set-Alias sha256 Get-SHA256Hash
 
 
 # for building concise prompt components and window titles
@@ -64,13 +74,13 @@ function Get-ShorterPath {
 }
 
 
-### Set the window title
+# set the window title
 function Set-Title ([string] $Text) {
     $Host.UI.RawUI.WindowTitle = $Text
 }
 
 
-### Clear old versions of the .NET Core SDK
+# Clear old versions of the .NET Core SDK
 function Remove-NetCoreSDK {
     $app = Get-WmiObject -Class Win32_Product | Where-Object {
         $_.Name -match "Microsoft .NET Core SDK"
@@ -85,6 +95,11 @@ function Remove-NetCoreSDK {
 }
 
 
-# use sudo.cmd over sudo.ps1 as it works better on Win Terminal for some reason
+# git helpers
+Set-Alias g git
+Set-Alias gs "git status"
+
+
+# use sudo.cmd over sudo.ps1 as it works better on the new Windows Terminal for whatever reason
 Set-Alias sudo sudo.cmd
 
