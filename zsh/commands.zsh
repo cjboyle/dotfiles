@@ -14,7 +14,11 @@ function mkcd {
 }
 
 function path-contains() {
-    return [[ ":${PATH}:" = *":${1}:"* ]]
+    if [[ "$PATH" =~ (^|:)"$1"(|/)(:|$) ]]; then
+        return 0
+    else
+        return 1
+    fi
 }
 
 function path-prepend() {
