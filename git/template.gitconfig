@@ -8,10 +8,23 @@
 
 #[credential]
 #    helper = cache --timeout=18000
-[credential "https://git.cs.usask.ca"]
-    username = cjb703
+
+[core]
+    editor = %GIT_EDITOR%
+    pager = less -+F -+R -+S -+X -r
+    autoclrf = %GIT_AUTOCLRF%
+    fileMode = false
+
+[diff]
+    tool = %GIT_DIFFTOOL%
+
+[grep]
+    break = true
+    heading = true
+    lineNumber = true
 
 [log]
+    abbrevCommit = true
     date = local
 
 [push]
@@ -20,34 +33,83 @@
 [color]
     ui = auto
 
+[color "branch"]
+    current = cyan bold reverse
+    local = cyan bold
+    remote = magenta bold
+
+[color "diff"]
+    meta = yellow bold
+    frag = magenta bold
+    old = red bold
+    new = green bold
+
+[color "status"]
+    branch = cyan bold
+    added = green bold
+    updated = green bold
+    changed = yellow bold
+    untracked = red bold
+    unmerged = red bold
+
 [alias]
-    aa = add -A
+	# emergencies
+	fire = !"git add -A; git commit --no-verify -m 'Emergency commit'; git push --force origin HEAD:refs/heads/fire-wip-cjboyle;"
+
+    # basic shorteners
+    a = add
+    aa = add --all
     cm = commit -m
     co = checkout
+    fa = fetch --all
     st = status -sb
-    ls = ls-tree --abbrev HEAD
-    
+    ls = ls-tree --full-name --abbrev HEAD
     top = rev-parse --show-toplevel
-    cd-top = !cd $(git-top)
-    
-    branches = branch -a
-    remotes = remote -v
-    stashes = stash list
-    tags = tag -n1 --list
-    
-    first-push = push --all --tags --set-upstream origin
+
+    # create a sub-scope to the shell underlying Git
+    sh = "!f() { $@ ; }; f"
+
+    # back-in-time utilities
     uncommit = reset --soft HEAD~1
     unstage = reset HEAD --
     discard = checkout --
 
-    # Emergencies
-    fire !"git add -A; git commit --no-verify -m 'Emergency commit'; git push --force origin HEAD:refs/heads/fire-wip-cjboyle; git fetch --all"
+    first-push = push --all --tags --set-upstream origin
+    force-pull = !"git fetch origin && git reset --hard @{u}"
     
+    # lexical utilities
+    branches = branch -a
+    remotes = remote -v
+    tags = tag -n1 --list
+    stashes = stash list
+    unstash = stash pop
+
+    # show aliases
+    alias-get = "!f() { git config --get alias.$1 || echo alias not found ; }; f"
+	aliases = "!f() { git config --list | grep '^alias' | sed 's/^alias.//g' ; }; f"
+
+    # .gitignore utilities
+    ignore = "!f() { echo '' $@ | tr '[:space:]' '\n' >> .gitignore && git add .gitignore; }; f"
+
+    # remote utilities
+    url = "!f() { rmt=${1:-origin}; git config --get remote.${rmt}.url || echo remote not found: \\`$rmt\\' >> /dev/stderr ; }; f"
+	browse = "!f() { url=`git url ${1:-origin}`; [ ! $url ] && return; (uname -a | egrep -i 'MINGW|MSYS' &> /dev/null) && powershell.exe start $url || xdg-open $url || echo $url ; }; f"
+	clone-hub = "!f() { git clone https://github.com/$1.git ${@:2} ; }; f"
+    sync = !"f() { bold=$(tput bold); normal=$(tput sgr0); changes=false; if [[ `git status --porcelain` ]]; then changes=true; echo \"${bold}Changes detected, stashing...${normal}\"; git stash save --include-untracked; else echo \"${bold}No local changes, skipping stash${normal}\"; fi; echo \"${bold}Rebasing and pushing...${normal}\"; git pull --rebase && git push; if [ \"$changes\" = true ] ; then echo \"${bold}Unstashing changes...${normal}\"; git stash pop --quiet; fi; }; f"
+	remote-hub-tokenize = !"f() { rmt=${1:-origin}; url=`git url ${rmt} | sed -e 's|https://github.com|https://cjboyle:%GITHUBTOKEN%@github.com|g'`; git remote set-url ${rmt} ${url}; }; f"
+	remote-https2ssh = !"f() { rmt=${1:-origin}; url=`git url ${rmt} | sed -e 's|https://|ssh://git@|g'`; git remote set-url ${rmt} ${url}; }; f"
+	remote-ssh2https = !"f() { rmt=${1:-origin}; url=`git url ${rmt} | sed -e 's|ssh://git@|https://|g'`; git remote set-url ${rmt} ${url}; }; f"
+
+    # forget any cached user credentials
+    logout = !rm -rf ~/.git-credentials
+
     # Linear logging
     log-recent = log --since='1 week ago'
     log-my-recent - !git log-recent --author $(git config user.email)
+	log-jsonld = log --date=iso --format='{ \"short_commit\":\"%h\", \"subject\":\"%s\", \"hashes\":{ \"commit\":\"%H\", \"tree\":\"%T\", \"parents\":\"%P\" }, \"author\":{ \"date\": \"%ai\", \"name\": \"%an\", \"email\":\"%ae\" }, \"committer\":{ \"date\": \"%ci\", \"name\": \"%cn\", \"email\":\"%ce\" }}'
+	log-json = !git log-jsonld --all | grep -v 'origin' | tr -d '\n' | sed 's/}{/}, {/g' | sed -e 's/^/[/' | sed -e 's/$/]/'
     log-csv = !"echo short_commit,author_name,author_date,subject; git log --dateiso --format='%h,%an,%ad,%s'"
-    
+
     # Tree logging
     tree = !git tree2
     tree-recent = !git tree --since='1 week ago'
