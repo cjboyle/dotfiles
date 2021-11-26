@@ -53,8 +53,8 @@
     unmerged = red bold
 
 [alias]
-	# emergencies
-	fire = !"git add -A; git commit --no-verify -m 'Emergency commit'; git push --force origin HEAD:refs/heads/fire-wip-cjboyle;"
+    # emergencies
+    fire = !"git add -A; git commit --no-verify -m 'Emergency commit'; git push --force origin HEAD:refs/heads/fire-wip-cjboyle;"
 
     # basic shorteners
     a = add
@@ -93,12 +93,12 @@
 
     # remote utilities
     url = "!f() { rmt=${1:-origin}; git config --get remote.${rmt}.url || echo remote not found: \\`$rmt\\' >> /dev/stderr ; }; f"
-	browse = "!f() { url=`git url ${1:-origin}`; [ ! $url ] && return; (uname -a | egrep -i 'MINGW|MSYS' &> /dev/null) && powershell.exe start $url || xdg-open $url || echo $url ; }; f"
-	clone-hub = "!f() { git clone https://github.com/$1.git ${@:2} ; }; f"
+    browse = "!f() { url=`git url ${1:-origin}`; [ ! $url ] && return; (uname -a | egrep -i 'MINGW|MSYS' &> /dev/null) && powershell.exe start $url || xdg-open $url || echo $url ; }; f"
+    clone-hub = "!f() { git clone https://github.com/$1.git ${@:2} ; }; f"
     sync = !"f() { bold=$(tput bold); normal=$(tput sgr0); changes=false; if [[ `git status --porcelain` ]]; then changes=true; echo \"${bold}Changes detected, stashing...${normal}\"; git stash save --include-untracked; else echo \"${bold}No local changes, skipping stash${normal}\"; fi; echo \"${bold}Rebasing and pushing...${normal}\"; git pull --rebase && git push; if [ \"$changes\" = true ] ; then echo \"${bold}Unstashing changes...${normal}\"; git stash pop --quiet; fi; }; f"
-	remote-hub-tokenize = !"f() { rmt=${1:-origin}; url=`git url ${rmt} | sed -e 's|https://github.com|https://cjboyle:%GITHUBTOKEN%@github.com|g'`; git remote set-url ${rmt} ${url}; }; f"
-	remote-https2ssh = !"f() { rmt=${1:-origin}; url=`git url ${rmt} | sed -e 's|https://|ssh://git@|g'`; git remote set-url ${rmt} ${url}; }; f"
-	remote-ssh2https = !"f() { rmt=${1:-origin}; url=`git url ${rmt} | sed -e 's|ssh://git@|https://|g'`; git remote set-url ${rmt} ${url}; }; f"
+    remote-hub-tokenize = !"f() { rmt=${1:-origin}; url=`git url ${rmt} | sed -e 's|https://github.com|https://cjboyle:%GITHUBTOKEN%@github.com|g'`; git remote set-url ${rmt} ${url}; }; f"
+    remote-https2ssh = !"f() { rmt=${1:-origin}; url=`git url ${rmt} | sed -e 's|https://|ssh://git@|g'`; git remote set-url ${rmt} ${url}; }; f"
+    remote-ssh2https = !"f() { rmt=${1:-origin}; url=`git url ${rmt} | sed -e 's|ssh://git@|https://|g'`; git remote set-url ${rmt} ${url}; }; f"
 
     # forget any cached user credentials
     logout = !rm -rf ~/.git-credentials
@@ -106,8 +106,8 @@
     # Linear logging
     log-recent = log --since='1 week ago'
     log-my-recent - !git log-recent --author $(git config user.email)
-	log-jsonld = log --date=iso --format='{ \"short_commit\":\"%h\", \"subject\":\"%s\", \"hashes\":{ \"commit\":\"%H\", \"tree\":\"%T\", \"parents\":\"%P\" }, \"author\":{ \"date\": \"%ai\", \"name\": \"%an\", \"email\":\"%ae\" }, \"committer\":{ \"date\": \"%ci\", \"name\": \"%cn\", \"email\":\"%ce\" }}'
-	log-json = !git log-jsonld --all | grep -v 'origin' | tr -d '\n' | sed 's/}{/}, {/g' | sed -e 's/^/[/' | sed -e 's/$/]/'
+    log-jsonld = log --date=iso --format='{ \"short_commit\":\"%h\", \"subject\":\"%s\", \"hashes\":{ \"commit\":\"%H\", \"tree\":\"%T\", \"parents\":\"%P\" }, \"author\":{ \"date\": \"%ai\", \"name\": \"%an\", \"email\":\"%ae\" }, \"committer\":{ \"date\": \"%ci\", \"name\": \"%cn\", \"email\":\"%ce\" }}'
+    log-json = !git log-jsonld --all | grep -v 'origin' | tr -d '\n' | sed 's/}{/}, {/g' | sed -e 's/^/[/' | sed -e 's/$/]/'
     log-csv = !"echo short_commit,author_name,author_date,subject; git log --dateiso --format='%h,%an,%ad,%s'"
 
     # Tree logging
