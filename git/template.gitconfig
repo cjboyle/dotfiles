@@ -86,7 +86,7 @@
 
     # show aliases
     alias-get = "!f() { git config --get alias.$1 || echo alias not found ; }; f"
-	aliases = "!f() { git config --list | grep '^alias' | sed 's/^alias.//g' ; }; f"
+    aliases = "!f() { git config --list | grep '^alias' | sed 's/^alias.//g' ; }; f"
 
     # .gitignore utilities
     ignore = "!f() { echo '' $@ | tr '[:space:]' '\n' >> .gitignore && git add .gitignore; }; f"
