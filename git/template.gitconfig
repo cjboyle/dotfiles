@@ -1,6 +1,6 @@
 [user]
     name = Connor Boyle
-    email = connorboyle@sasktel.net
+    email = %EMAIL%
 
 [github]
     user = cjboyle
@@ -27,9 +27,6 @@
     abbrevCommit = true
     date = local
 
-[push]
-    default = simple
-
 [color]
     ui = auto
 
@@ -52,6 +49,12 @@
     untracked = red bold
     unmerged = red bold
 
+[safe]
+    # low potential for danger setting this to star pattern
+    # - home: Windows ACLs ensure no file is "safe"
+    # - work: need read-access to repository info in shared directories
+    directory = *
+
 [alias]
     # emergencies
     fire = !"git add -A; git commit --no-verify -m 'Emergency commit'; git push --force origin HEAD:refs/heads/fire-wip-cjboyle;"
@@ -62,6 +65,7 @@
     cm = commit -m
     co = checkout
     fa = fetch --all
+    gud = "!f() { url='https://git-scm.com/book/en/v2'; (uname -a | egrep -i 'MINGW|MSYS' &> /dev/null) && powershell.exe start $url || xdg-open $url || echo $url ; }; f"
     st = status -sb
     ls = ls-tree --full-name --abbrev HEAD
     top = rev-parse --show-toplevel
